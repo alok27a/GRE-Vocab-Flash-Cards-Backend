@@ -1,7 +1,7 @@
 import dotenv from 'dotenv'
 import mongoose from 'mongoose'
-const MONGO_URI = process.env.MONGO_URI
 dotenv.config()
+const MONGO_URI = process.env.MONGO_URI
 
 const connectToDatabase = () => {
     try {
