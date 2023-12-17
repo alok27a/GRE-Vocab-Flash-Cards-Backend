@@ -1,4 +1,7 @@
+import dotenv from 'dotenv'
+dotenv.config()
 import User from '../models/userSchema.js';
+import jwt from 'jsonwebtoken';
 
 const getUsers = async (req, res) => {
     try {
@@ -23,13 +26,25 @@ const getUser = async (req, res) => {
 
 const createUser = async (req, res) => {
     try {
-        const newUser = new User(req.body);
+        const { googleId, email, name, imageUrl } = req.body; // Data sent from the frontend
 
-        // Save the new user and store the result in a variable
-        const savedUser = await newUser.save();
+        // Check if user already exists
+        let user = await User.findOne({ googleId });
 
-        // Return the saved user data in the response
-        res.status(201).json({ success: true, message: "Account Created Successfully", data: savedUser });
+        if (!user) {
+            // If user does not exist, create a new one
+            user = new User({ googleId, email, name, imageUrl });
+            await user.save();
+        }
+
+        // Generate a JWT token
+        const jwtToken = jwt.sign(
+            { id: user._id },
+            process.env.JWT_SECRET,
+            { expiresIn: '1h' }
+        );
+
+        res.status(201).json({ success: true, message: "User processed successfully", data: user, token: jwtToken });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
     }
