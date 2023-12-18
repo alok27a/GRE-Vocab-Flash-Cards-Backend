@@ -68,40 +68,37 @@ export const getNotCategorizedWords = async (req, res) => {
     }
 };
 
-
 export const getUserProgress = async (req, res) => {
     try {
         const { userId } = req.params;
-        const { category } = req.body; // Selected category from the request body
 
-        // Fetch all words in the selected category
-        const allWordsInCategory = await GreWord.find({ category }).select('_id');
-        const allWordIds = allWordsInCategory.map(word => word._id);
+        // Assuming you have a constant for the total number of GRE words
+        const TOTAL_GRE_WORDS = 2532;
 
-        // Fetch user's progress for these words
-        const userProgress = await UserProgress.find({
-            userId,
-            wordId: { $in: allWordIds }
-        });
+        // Fetch all progress records for this user
+        const userProgress = await UserProgress.find({ userId });
 
         // Calculate progress
-        const totalWords = allWordsInCategory.length;
         const knownWords = userProgress.filter(word => word.knewThisWord).length;
+        
         const reviewWords = userProgress.filter(word => word.reviewLater).length;
+        const totalWordsSeen = knownWords + reviewWords; // Assuming no overlap between known and review words
+        const remainingWords = TOTAL_GRE_WORDS - totalWordsSeen; // Calculate remaining words
 
         res.json({
             success: true,
             data: {
-                totalWords,
+                totalWords: TOTAL_GRE_WORDS,
                 knownWords,
-                reviewWords
+                reviewWords,
+                remainingWords, // Add remaining words to the response
+                totalWordsSeen
             }
         });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
     }
 };
-
 
 
 export const getWordsByUserSelection = async (req, res) => {
