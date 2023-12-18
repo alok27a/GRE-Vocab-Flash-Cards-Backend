@@ -104,43 +104,30 @@ export const getUserProgress = async (req, res) => {
 
 
 
-
 export const getWordsByUserSelection = async (req, res) => {
     try {
-        const { userId } = req.params; // or req.userId if using auth middleware
-        const { category, option } = req.body; // User's selected category and option
+        const { userId } = req.params;
+        const { category, option } = req.body;
 
-        // Fetch all words in the selected category from the 'grewords' collection
-        let wordsInCategory = await GreWord.find({ category });
+        // Adjust the query based on the selected category
+        let query = category === 'all' ? {} : { category }; // If 'all', fetch all categories
+        let wordsInCategory = await GreWord.find(query);
 
-        let userProgress = await UserProgress.find({ userId });
-
-
-
+        let userProgress;
         if (option === 'reviewLater') {
             userProgress = await UserProgress.find({ userId, reviewLater: true });
         } else if (option === 'knewThisWord') {
             userProgress = await UserProgress.find({ userId, knewThisWord: true });
-        }
-
-        else if (option === 'notMarked') {
-            // Get all word IDs that the user has interacted with
+        } else if (option === 'notMarked') {
             const userProgressWordIds = (await UserProgress.find({ userId })).map(progress => progress.wordId);
 
-
-            // Filter to get words in the selected category that the user has not interacted with
+            // Filter for not marked words
             const notMarkedWords = wordsInCategory.filter(word =>
                 !userProgressWordIds.some(userWordId => userWordId.equals(word._id))
             );
             res.json({ success: true, data: notMarkedWords });
-
             return;
-        }
-
-
-
-        else {
-            // If 'all' or any other option is specified, fetch all user progress for the category
+        } else {
             userProgress = await UserProgress.find({ userId });
         }
 
@@ -150,7 +137,6 @@ export const getWordsByUserSelection = async (req, res) => {
         // Filter the words based on the IDs obtained from user progress
         wordsInCategory = wordsInCategory.filter(word => {
             const wordIdStr = word._id.toString();
-            // Include the word if we're looking for all words or if the ID is found in the progress IDs
             return option === 'all' || progressWordIds.includes(wordIdStr);
         });
 
@@ -159,6 +145,7 @@ export const getWordsByUserSelection = async (req, res) => {
         res.status(500).json({ success: false, message: err.message });
     }
 };
+
 
 
 
