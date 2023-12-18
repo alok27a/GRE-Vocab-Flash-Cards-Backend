@@ -28,7 +28,7 @@ router.get('/progress/:userId', getUserProgress);
 
 
 // Retreiving the words requested by the user
-router.get('/words/:userId', getWordsByUserSelection);
+router.post('/words/:userId', getWordsByUserSelection);
 
 
 export default router;
