@@ -4,7 +4,9 @@ import {
     getKnewThisWords, 
     getNotCategorizedWords,
     markReviewLater,
-    markKnewThisWord 
+    markKnewThisWord,
+    getUserProgress,
+    getWordsByUserSelection
 } from '../controllers/userProgressController.js';
 import authMiddleware from '../middleware/authMiddleware.js';
 
@@ -19,5 +21,14 @@ router.get('/notcategorized', getNotCategorizedWords);
 
 router.put('/markreviewlater/:wordId', markReviewLater);
 router.put('/markknewthisword/:wordId', markKnewThisWord);
+
+
+// Progress of the user
+router.get('/progress/:userId', getUserProgress);
+
+
+// Retreiving the words requested by the user
+router.get('/words/:userId', getWordsByUserSelection);
+
 
 export default router;
