@@ -149,7 +149,7 @@ export const getWordsByUserSelection = async (req, res) => {
 export const resetProgress = async (req, res) => {
     try {
         const { userId } = req.params;
-        await UserProgress.deleteMany({ userId });
+        await UserProgress.deleteMany({ userId: ObjectId(userId) });
         res.json({ success: true, message: "Progress reset successfully" });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
