@@ -1,6 +1,5 @@
 import UserProgress from '../models/userProgress.js';
 import GreWord from '../models/greWord.js';
-import { reset } from 'nodemon';
 
 export const markReviewLater = async (req, res) => {
     try {
@@ -149,7 +148,7 @@ export const getWordsByUserSelection = async (req, res) => {
 export const resetProgress = async (req, res) => {
     try {
         const { userId } = req.params;
-        await UserProgress.deleteMany({ userId: ObjectId(userId) });
+        await UserProgress.deleteMany({ userId: userId });
         res.json({ success: true, message: "Progress reset successfully" });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
