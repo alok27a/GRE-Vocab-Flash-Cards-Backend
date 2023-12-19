@@ -6,7 +6,8 @@ import {
     markReviewLater,
     markKnewThisWord,
     getUserProgress,
-    getWordsByUserSelection
+    getWordsByUserSelection,
+    resetProgress
 } from '../controllers/userProgressController.js';
 import authMiddleware from '../middleware/authMiddleware.js';
 
@@ -30,5 +31,7 @@ router.get('/progress/:userId', getUserProgress);
 // Retreiving the words requested by the user
 router.post('/words/:userId', getWordsByUserSelection);
 
+// Reset progress
+router.put('/resetprogress/:userId', resetProgress);
 
 export default router;
